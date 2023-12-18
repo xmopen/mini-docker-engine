@@ -1,0 +1,9 @@
+@startuml ContainerUML
+
+participant docker
+
+activate docker
+docker -> A: docker
+deactivate docker
+
+@enduml
