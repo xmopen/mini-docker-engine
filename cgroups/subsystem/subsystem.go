@@ -2,8 +2,6 @@ package subsystem
 
 import "github.com/xmopen/golib/pkg/xlogging"
 
-var xlog = xlogging.Tag("subsytem")
-
 var (
 	SubSystemInstances = []Subsystem{
 		&CPUSetSubSystem{
@@ -12,7 +10,9 @@ var (
 		&CPUSubSystem{
 			xlog: xlogging.Tag("cpu.subsystem"),
 		},
-		&MemorySubSystem{},
+		&MemorySubSystem{
+			xlog: xlogging.Tag("memory.subsystem"),
+		},
 	}
 )
 

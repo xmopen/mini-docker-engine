@@ -5,6 +5,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/xmopen/godocker/utils/fileutils"
 	"github.com/xmopen/golib/pkg/xlogging"
 )
 
@@ -21,7 +22,7 @@ func (c *CPUSubSystem) Name() string {
 // Set 对cgroup设置CPU资源限制
 func (c *CPUSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 	c.xlog.Debugf("set cgrouppath:[%+v] resource:[%+v]", cgroupPath, res)
-	subSystemPath, err := GetCgroupPath(c.Name(), cgroupPath, true)
+	subSystemPath, err := fileutils.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
 		return err
 	}
@@ -29,7 +30,7 @@ func (c *CPUSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 		return nil
 	}
 	cpuShareSystemFilePath := path.Join(subSystemPath, "cpu.shares")
-	if err := IOWriteFile(cpuShareSystemFilePath, []byte(res.CPUShare), 0644); err != nil {
+	if err := fileutils.IOWriteFile(cpuShareSystemFilePath, []byte(res.CPUShare), 0644); err != nil {
 		c.xlog.Debugf("write file err:[%+v] filePath:[%+v] res:[%+v]", err, cpuShareSystemFilePath, res)
 		return err
 	}
@@ -39,7 +40,7 @@ func (c *CPUSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 // Remove 移除掉某个CgroupPath中的CPUSubSystem限制
 func (c *CPUSubSystem) Remove(cgroupPath string) error {
 	c.xlog.Debugf("remove group:[%+v]", cgroupPath)
-	subSystemPath, err := GetCgroupPath(c.Name(), cgroupPath, true)
+	subSystemPath, err := fileutils.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
 		return err
 	}
@@ -49,12 +50,12 @@ func (c *CPUSubSystem) Remove(cgroupPath string) error {
 // Apply 将PID对应的进程ID添加到对应的cgrouppath中
 func (c *CPUSubSystem) Apply(cgroupPath string, pid int) error {
 	c.xlog.Debugf("apply group:[%+v] pid:[%+v]", cgroupPath, pid)
-	subSysGroupPath, err := GetCgroupPath(c.Name(), cgroupPath, true)
+	subSysGroupPath, err := fileutils.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
 		return err
 	}
 	cpuSubSystemInGroupPath := path.Join(subSysGroupPath, "tasks")
-	if err := IOWriteFile(cpuSubSystemInGroupPath, []byte(strconv.Itoa(pid)), 0644); err != nil {
+	if err := fileutils.IOWriteFile(cpuSubSystemInGroupPath, []byte(strconv.Itoa(pid)), 0644); err != nil {
 		c.xlog.Errorf("writefile err:[%+v] path:[%+v] pid:[%+v]", err, cpuSubSystemInGroupPath, pid)
 		return err
 	}
