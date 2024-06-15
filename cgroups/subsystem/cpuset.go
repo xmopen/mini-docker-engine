@@ -16,7 +16,7 @@ type CPUSetSubSystem struct {
 
 // Name CPUSetSubSystem Name
 func (c *CPUSetSubSystem) Name() string {
-	return "cpuset"
+	return "cpu"
 }
 
 // Set 设置CGroup对应的CPUSetSubSystem

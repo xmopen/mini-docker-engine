@@ -1,6 +1,7 @@
 package subsystem
 
 import (
+	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
@@ -30,7 +31,7 @@ func (c *CPUSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 		return nil
 	}
 	cpuShareSystemFilePath := path.Join(subSystemPath, "cpu.shares")
-	if err := fileutils.IOWriteFile(cpuShareSystemFilePath, []byte(res.CPUShare), 0644); err != nil {
+	if err := ioutil.WriteFile(cpuShareSystemFilePath, []byte(res.CPUShare), 0644); err != nil {
 		c.xlog.Debugf("write file err:[%+v] filePath:[%+v] res:[%+v]", err, cpuShareSystemFilePath, res)
 		return err
 	}

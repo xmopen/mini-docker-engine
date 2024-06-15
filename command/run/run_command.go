@@ -36,19 +36,28 @@ var Command = cli.Command{
 }
 
 // runCommandAction run 命令执行函数
+// docker run imgae cmd...
+// -d 后台运行，-t 伪终端 -i标准输入输出
 func runCommandAction(ctx *cli.Context) error {
 	if len(ctx.Args()) < 1 {
 		return fmt.Errorf("run command missiong args")
-	}
-	resource := &subsystem.ResourceConfig{
-		MemoryLimit: ctx.String("m"),
-		CPUShare:    ctx.String("cpushare"),
-		CPUSet:      ctx.String("cpuset"),
 	}
 	cmdArray := make([]string, 0)
 	for _, arg := range ctx.Args() {
 		cmdArray = append(cmdArray, arg)
 	}
-	xlog.Debugf("run command resource:[%+v]", resource)
-	return run(ctx.Bool("ti"), cmdArray, resource)
+	runParameter := nweRunCommandParameter(ctx)
+	if runParameter.createTty && runParameter.detach {
+		// 这两个命令不能同时存在。
+		return fmt.Errorf("ti and d paramter can not both provided")
+	}
+	runParameter.setImageName(cmdArray[0])
+	cmdArray = cmdArray[1:]
+	resourceConfig := &subsystem.ResourceConfig{
+		MemoryLimit: ctx.String("m"),
+		CPUShare:    ctx.String("cpushare"),
+		CPUSet:      ctx.String("cpuset"),
+	}
+	xlog.Debugf("run command resource:[%+v],cmd:[%+v],param:[%+v]", resourceConfig, cmdArray, runParameter)
+	return run(ctx.Bool("ti"), cmdArray, resourceConfig, runParameter)
 }
